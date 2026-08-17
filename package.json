@@ -1,0 +1,20 @@
+{
+  "name": "dms-device-viewer",
+  "version": "1.0.0",
+  "description": "ELD DMS QA 後台 - 裝置清單查詢工具（headless 登入 + Inertia JSON 拉取）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "mock": "node mock/mock-server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "axios-cookiejar-support": "^5.0.3",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "tough-cookie": "^5.0.0"
+  }
+}

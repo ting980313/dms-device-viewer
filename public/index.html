@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ELD DMS 裝置查詢工具（QA）</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>ELD DMS 裝置查詢工具 <span class="badge">QA</span></h1>
+    <div id="statusArea" class="status-area"></div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- 登入區塊 -->
+  <section id="loginSection" class="card" hidden>
+    <h2>登入 DMS</h2>
+    <p class="hint">
+      使用您的 DMS 測試帳號登入。密碼只會在登入當下送到本機後端、由後端代打
+      DMS 的 <code>/login</code>，不會被儲存或寫進任何檔案。
+    </p>
+    <div id="quickLoginArea" hidden class="quick-login">
+      <button type="button" id="quickLoginBtn">使用預設帳號登入（<span id="quickLoginEmail"></span>）</button>
+    </div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="password">密碼</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" />
+      </div>
+      <div class="field checkbox-field">
+        <label><input type="checkbox" id="remember" /> 記住我</label>
+      </div>
+      <button type="submit" id="loginBtn">登入</button>
+      <p id="loginError" class="error-msg" hidden></p>
+    </form>
+  </section>
+
+  <!-- 查詢區塊 -->
+  <section id="appSection" class="card" hidden>
+    <h2>裝置查詢</h2>
+    <form id="filterForm" class="filter-form">
+      <div class="field">
+        <label for="device_kind">裝置類型 device_kind</label>
+        <input type="text" id="device_kind" value="eld" />
+      </div>
+      <div class="field">
+        <label for="serial_number">序號 serial_number</label>
+        <input type="text" id="serial_number" placeholder="留空查全部" />
+      </div>
+      <div class="field">
+        <label for="sort_by">排序欄位 sort_by</label>
+        <select id="sort_by">
+          <option value="serial_number">serial_number</option>
+          <option value="id">id</option>
+          <option value="imei">imei</option>
+          <option value="eld_id">eld_id</option>
+          <option value="model_code">model_code</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="sort_order">排序方向 sort_order</label>
+        <select id="sort_order">
+          <option value="asc">asc</option>
+          <option value="desc">desc</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="per_page">每頁筆數 per_page</label>
+        <select id="per_page">
+          <option value="10">10</option>
+          <option value="20" selected>20</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+      </div>
+      <div class="field field-btn">
+        <button type="submit" id="searchBtn">查詢</button>
+      </div>
+    </form>
+
+    <div id="queryError" class="error-msg" hidden></div>
+    <div id="loadingIndicator" class="loading" hidden>查詢中…</div>
+
+    <div id="resultsArea" hidden>
+      <div class="results-meta">
+        <span id="resultsSummary"></span>
+        <div class="results-actions">
+          <button type="button" id="exportCsvBtn" class="link-btn">匯出 CSV</button>
+          <button type="button" id="toggleJsonBtn" class="link-btn">檢視原始 JSON</button>
+        </div>
+      </div>
+      <div class="table-wrap" id="tableWrap">
+        <table id="resultsTable">
+          <thead><tr id="tableHeadRow"></tr></thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+      <pre id="jsonView" class="json-view" hidden></pre>
+      <div class="pagination" id="pagination"></div>
+    </div>
+
+    <div id="emptyState" class="empty-state" hidden>沒有符合條件的裝置。</div>
+
+    <details id="debugPanel" class="debug-panel" hidden>
+      <summary>除錯資訊</summary>
+      <dl id="debugList" class="debug-list"></dl>
+    </details>
+  </section>
+
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
