@@ -143,6 +143,25 @@ button[type="submit"]:disabled { opacity: 0.6; cursor: default; }
 }
 .field-btn { justify-content: flex-end; }
 
+.advanced-search {
+  grid-column: 1 / -1;
+  margin: -4px 0 4px;
+}
+.advanced-search summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 6px 0;
+  user-select: none;
+}
+.advanced-search summary:hover { color: var(--text); }
+.advanced-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px 16px;
+  margin-top: 10px;
+}
+
 .error-msg {
   background: var(--error-bg);
   color: var(--error);
@@ -221,26 +240,46 @@ button[type="submit"]:disabled { opacity: 0.6; cursor: default; }
 .debug-list dt { color: var(--text-muted); }
 .debug-list dd { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
 
-.table-wrap {
-  overflow-x: auto;
+.cards-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 4px 0;
+}
+.device-card {
   border: 1px solid var(--border);
   border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--card-bg);
 }
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-thead tr { background: #f8f9fb; }
-th, td {
-  text-align: left;
-  padding: 8px 12px;
+.device-card-title {
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  white-space: nowrap;
 }
-tbody tr:hover { background: #f8faff; }
-.bool-true { color: #1a8a4a; font-weight: 600; }
-.bool-false { color: var(--text-muted); }
+.device-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+.device-card-field { min-width: 0; }
+.device-card-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 2px;
+}
+.device-card-value {
+  font-size: 14px;
+  font-weight: 600;
+  word-break: break-word;
+}
+@media (max-width: 380px) {
+  .device-card-grid { grid-template-columns: 1fr; }
+}
 
 .pagination {
   display: flex;

@@ -17,9 +17,7 @@
   const loadingIndicator = document.getElementById('loadingIndicator');
   const resultsArea = document.getElementById('resultsArea');
   const resultsSummary = document.getElementById('resultsSummary');
-  const tableWrap = document.getElementById('tableWrap');
-  const tableHeadRow = document.getElementById('tableHeadRow');
-  const tableBody = document.getElementById('tableBody');
+  const cardsWrap = document.getElementById('cardsWrap');
   const pagination = document.getElementById('pagination');
   const emptyState = document.getElementById('emptyState');
   const toggleJsonBtn = document.getElementById('toggleJsonBtn');
@@ -28,11 +26,48 @@
   const debugPanel = document.getElementById('debugPanel');
   const debugList = document.getElementById('debugList');
 
-  // 優先顯示的欄位順序；其餘欄位（若有）會自動附加在後面
+  // 優先顯示的欄位順序（給 CSV 匯出用）；其餘欄位（若有）會自動附加在後面
   const PREFERRED_COLUMNS = [
     'id', 'serial_number', 'imei', 'eld_id', 'model_code',
     'org_id', 'iccid', 'is_active',
   ];
+
+  // 手機查詢畫面實際要顯示的精簡欄位（卡片模式）。
+  // keys 是「候選欄位名稱」清單，會依序找第一個有值的——這是因為我們還沒
+  // 100% 確認 DMS 真正回傳的欄位英文名稱，先把常見的命名方式都列進去，
+  // 之後如果發現實際欄位名稱不同，只要把正確的名字加進對應的 keys 陣列即可。
+  const DISPLAY_COLUMNS = [
+    { label: '電瓶電壓 Battery', keys: ['car_battery_voltage', 'battery_voltage', 'car_battery'] },
+    { label: 'GPS 速度 GPS Speed', keys: ['gps_speed'] },
+    { label: 'Mode', keys: ['mode'] },
+    { label: '韌體版本 Firmware', keys: ['eld_firmware_version', 'firmware_version'] },
+    { label: '連線狀態 Connect Status', keys: ['connect_status', 'connection_status'] },
+    { label: 'VIN', keys: ['vin', 'vin_id', 'vin_number'] },
+    { label: '引擎小時 Engine Hours', keys: ['engine_hours'] },
+    { label: '里程 Engine Mile', keys: ['engine_mile', 'engine_miles', 'engine_mileage', 'mileage'] },
+    { label: 'RPM', keys: ['rpm'] },
+  ];
+
+  function getValue(row, keys) {
+    for (const k of keys) {
+      if (row[k] !== undefined && row[k] !== null && row[k] !== '') return row[k];
+    }
+    return undefined;
+  }
+
+  function formatValue(val) {
+    if (val === undefined || val === null || val === '') return '—';
+    if (typeof val === 'boolean') return val ? '是' : '否';
+    if (typeof val === 'object') return JSON.stringify(val);
+    return String(val);
+  }
+
+  function scrollToEl(el) {
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
   let showingJson = false;
   let lastDevicesPayload = null;
@@ -131,7 +166,7 @@
 
   toggleJsonBtn.addEventListener('click', () => {
     showingJson = !showingJson;
-    tableWrap.hidden = showingJson;
+    cardsWrap.hidden = showingJson;
     jsonView.hidden = !showingJson;
     toggleJsonBtn.textContent = showingJson ? '檢視表格' : '檢視原始 JSON';
     if (showingJson && lastDevicesPayload) {
@@ -252,42 +287,39 @@
     if (!rows.length) {
       emptyState.hidden = false;
       resultsArea.hidden = true;
+      scrollToEl(emptyState);
       return;
     }
 
-    // 決定欄位順序：常見欄位優先，其餘依原始順序附加在後面
-    const allKeys = Object.keys(rows[0]);
-    const columns = [
-      ...PREFERRED_COLUMNS.filter((k) => allKeys.includes(k)),
-      ...allKeys.filter((k) => !PREFERRED_COLUMNS.includes(k)),
-    ];
-
-    tableHeadRow.innerHTML = '';
-    columns.forEach((col) => {
-      const th = document.createElement('th');
-      th.textContent = col;
-      tableHeadRow.appendChild(th);
-    });
-
-    tableBody.innerHTML = '';
+    // 手機優先：每台裝置用一張卡片顯示，序號當標題，其餘精簡欄位用
+    // 2 欄小格子排列，不會有橫向捲動的問題。
+    cardsWrap.innerHTML = '';
     rows.forEach((row) => {
-      const tr = document.createElement('tr');
-      columns.forEach((col) => {
-        const td = document.createElement('td');
-        const val = row[col];
-        if (typeof val === 'boolean') {
-          td.textContent = val ? 'true' : 'false';
-          td.className = val ? 'bool-true' : 'bool-false';
-        } else if (val === null || val === undefined) {
-          td.textContent = '—';
-        } else if (typeof val === 'object') {
-          td.textContent = JSON.stringify(val);
-        } else {
-          td.textContent = String(val);
-        }
-        tr.appendChild(td);
+      const card = document.createElement('div');
+      card.className = 'device-card';
+
+      const title = document.createElement('div');
+      title.className = 'device-card-title';
+      title.textContent = getValue(row, ['serial_number']) || '（無序號）';
+      card.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'device-card-grid';
+      DISPLAY_COLUMNS.forEach((col) => {
+        const field = document.createElement('div');
+        field.className = 'device-card-field';
+        const label = document.createElement('div');
+        label.className = 'device-card-label';
+        label.textContent = col.label;
+        const value = document.createElement('div');
+        value.className = 'device-card-value';
+        value.textContent = formatValue(getValue(row, col.keys));
+        field.appendChild(label);
+        field.appendChild(value);
+        grid.appendChild(field);
       });
-      tableBody.appendChild(tr);
+      card.appendChild(grid);
+      cardsWrap.appendChild(card);
     });
 
     resultsSummary.textContent =
@@ -301,6 +333,7 @@
 
     resultsArea.hidden = false;
     emptyState.hidden = true;
+    scrollToEl(resultsArea);
   }
 
   function renderPagination(paginator) {

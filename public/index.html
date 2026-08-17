@@ -56,32 +56,39 @@
         <label for="serial_number">序號 serial_number</label>
         <input type="text" id="serial_number" placeholder="留空查全部" />
       </div>
-      <div class="field">
-        <label for="sort_by">排序欄位 sort_by</label>
-        <select id="sort_by">
-          <option value="serial_number">serial_number</option>
-          <option value="id">id</option>
-          <option value="imei">imei</option>
-          <option value="eld_id">eld_id</option>
-          <option value="model_code">model_code</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="sort_order">排序方向 sort_order</label>
-        <select id="sort_order">
-          <option value="asc">asc</option>
-          <option value="desc">desc</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="per_page">每頁筆數 per_page</label>
-        <select id="per_page">
-          <option value="10">10</option>
-          <option value="20" selected>20</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
-      </div>
+
+      <details class="advanced-search">
+        <summary>進階搜尋選項（排序 / 每頁筆數）</summary>
+        <div class="advanced-fields">
+          <div class="field">
+            <label for="sort_by">排序欄位 sort_by</label>
+            <select id="sort_by">
+              <option value="serial_number">serial_number</option>
+              <option value="id">id</option>
+              <option value="imei">imei</option>
+              <option value="eld_id">eld_id</option>
+              <option value="model_code">model_code</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sort_order">排序方向 sort_order</label>
+            <select id="sort_order">
+              <option value="asc">asc</option>
+              <option value="desc">desc</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="per_page">每頁筆數 per_page</label>
+            <select id="per_page">
+              <option value="10">10</option>
+              <option value="20" selected>20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
       <div class="field field-btn">
         <button type="submit" id="searchBtn">查詢</button>
       </div>
@@ -98,12 +105,7 @@
           <button type="button" id="toggleJsonBtn" class="link-btn">檢視原始 JSON</button>
         </div>
       </div>
-      <div class="table-wrap" id="tableWrap">
-        <table id="resultsTable">
-          <thead><tr id="tableHeadRow"></tr></thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
+      <div class="cards-wrap" id="cardsWrap"></div>
       <pre id="jsonView" class="json-view" hidden></pre>
       <div class="pagination" id="pagination"></div>
     </div>
